@@ -92,10 +92,34 @@ export default function ApplyPage() {
   const resumeUrl = watch('resumeUrl');
   const videoUrl = watch('videoUrl');
 
+  // Demo Mode Switch: Set this to true to mock uploads and submissions for client presentations.
+  // Set to false to connect to your live Google Sheet and Drive API.
+  const IS_DEMO_MODE = true;
+
   // Handle standard small file uploads (Photos, Resume) directly to Apps Script via base64 POST
   const handleSmallFileUpload = async (file: File, key: string, folderName: string) => {
     try {
       setUploads((prev) => ({ ...prev, [key]: { progress: 10, status: 'uploading', name: file.name } }));
+
+      if (IS_DEMO_MODE) {
+        // Simulate a smooth upload progress bar for demo
+        let progress = 10;
+        const interval = setInterval(() => {
+          progress += 15;
+          if (progress >= 100) {
+            clearInterval(interval);
+            const mockUrl = key === 'resume' 
+              ? 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' 
+              : 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=300&auto=format&fit=crop';
+            setUploads((prev) => ({ ...prev, [key]: { progress: 100, status: 'success', url: mockUrl, name: file.name } }));
+            setValue(key + 'Url' as any, mockUrl, { shouldValidate: true });
+            toast({ type: 'success', title: 'File uploaded successfully (Demo)', description: file.name });
+          } else {
+            setUploads((prev) => ({ ...prev, [key]: { ...prev[key], progress } }));
+          }
+        }, 150);
+        return;
+      }
 
       // Read file content as base64 on client side
       const reader = new FileReader();
@@ -178,6 +202,30 @@ export default function ApplyPage() {
     setPortfolioList((prev) => [...prev, newUpload]);
 
     try {
+      if (IS_DEMO_MODE) {
+        // Simulate a smooth upload progress bar for demo
+        let progress = 10;
+        const interval = setInterval(() => {
+          progress += 20;
+          if (progress >= 100) {
+            clearInterval(interval);
+            const mockUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300&auto=format&fit=crop';
+            setPortfolioList((prev) => {
+              const updated = prev.map((item) => (item.id === fileId ? { ...item, progress: 100, status: 'success' as const, url: mockUrl } : item));
+              const urls = updated.filter((item) => item.status === 'success' && item.url).map((item) => item.url).join(',');
+              setValue('portfolioUrls', urls, { shouldValidate: true });
+              return updated;
+            });
+            toast({ type: 'success', title: 'Portfolio image uploaded (Demo)', description: file.name });
+          } else {
+            setPortfolioList((prev) =>
+              prev.map((item) => (item.id === fileId ? { ...item, progress } : item))
+            );
+          }
+        }, 150);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = async () => {
         try {
@@ -266,6 +314,24 @@ export default function ApplyPage() {
   const handleVideoUpload = async (file: File) => {
     try {
       setUploads((prev) => ({ ...prev, video: { progress: 5, status: 'uploading', name: file.name } }));
+
+      if (IS_DEMO_MODE) {
+        // Simulate a smooth progress bar for video upload
+        let progress = 5;
+        const interval = setInterval(() => {
+          progress += 8;
+          if (progress >= 100) {
+            clearInterval(interval);
+            const mockUrl = 'https://www.w3schools.com/html/mov_bbb.mp4';
+            setUploads((prev) => ({ ...prev, video: { progress: 100, status: 'success', url: mockUrl, name: file.name } }));
+            setValue('videoUrl', mockUrl, { shouldValidate: true });
+            toast({ type: 'success', title: 'Audition video uploaded (Demo)', description: file.name });
+          } else {
+            setUploads((prev) => ({ ...prev, video: { ...prev.video, progress } }));
+          }
+        }, 120);
+        return;
+      }
 
       // Step 1: Initiate session directly with Google Apps Script Web App
       const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
@@ -416,6 +482,18 @@ export default function ApplyPage() {
   const onSubmit = async (data: AuditionInput) => {
     setIsSubmitting(true);
     try {
+      if (IS_DEMO_MODE) {
+        // Simulate database submission delay
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        
+        const mockSubmissionId = "AUD-DEMO-" + Math.floor(1000 + Math.random() * 9000);
+        const mockRef = "REF-" + Math.floor(100000 + Math.random() * 900000);
+        
+        toast({ type: 'success', title: 'Application Submitted (Demo)', description: 'Your application has been received!' });
+        router.push(`/success?id=${mockSubmissionId}&ref=${mockRef}`);
+        return;
+      }
+
       const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
       if (!appsScriptUrl) {
         throw new Error('Google Apps Script URL is not configured.');
