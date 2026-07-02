@@ -26,55 +26,55 @@ export default function LandingPage() {
   };
 
   const auditionDetails = [
-    { icon: Calendar, label: "Shoot Dates", val: "Sept 15 - Oct 30, 2026" },
-    { icon: MapPin, label: "Location", val: "New York City & London" },
-    { icon: DollarSign, label: "Compensation", val: "SAG-AFTRA scale ($1,082/day)" },
-    { icon: Clock, label: "Duration", val: "6-Week Principal Contract" },
+    { icon: Calendar, label: "Audition Date", val: "July 5, 2026" },
+    { icon: MapPin, label: "Venue Location", val: "Luton, United Kingdom" },
+    { icon: Clock, label: "Audition Time", val: "10:00 AM - 5:00 PM BST" },
+    { icon: Award, label: "Shoot Timeline", val: "September 2026 (UK)" },
   ];
 
   const requirements = [
     { 
       icon: Camera, 
       title: "Profile & Portfolio Photos", 
-      desc: "1 main headshot (under 10MB) and up to 5 portfolio/lifestyle shots showing range." 
+      desc: "1 main headshot and up to 5 portfolio/lifestyle shots showing range (Under 10MB each)." 
     },
     { 
       icon: Video, 
-      title: "Audition Video", 
-      desc: "2-minute monologue in MP4, MOV, or AVI format. File size limit is 500MB." 
+      title: "Audition Monologue", 
+      desc: "2-minute monologue video (MP4, MOV, or AVI). Max size limit is 500MB." 
     },
     { 
       icon: FileText, 
       title: "Resume / CV (PDF)", 
-      desc: "Optional but highly recommended. Upload your acting training and theater credits." 
+      desc: "Highly recommended. Detail any acting, theater, or modeling experience." 
     },
     { 
       icon: Award, 
-      title: "Eligibility", 
-      desc: "Ages 18-65. Open to both union (SAG-AFTRA) and non-union performers." 
+      title: "Target Roles", 
+      desc: "Heroines (18-25y), College Students (18-25y), Professionals (25-45y), Parents (35-60y)." 
     },
   ];
 
   const faqs = [
     {
-      q: "What should I perform in my audition video?",
-      a: "Please prepare a 2-minute contemporary dramatic monologue. Ensure your lighting is bright, framing is medium close-up (chest up), and audio is clear without background noise."
+      q: "Where is the Walk-In audition located?",
+      a: "Walk-in auditions will be held at Kerala Hut, 1 George St., Luton LU1 2AA, United Kingdom on July 5, 2026, from 10:00 AM to 5:00 PM."
     },
     {
-      q: "How large can my video file be?",
-      a: "Our portal supports video files up to 500MB directly. Allowed formats are MP4, MOV, and AVI. For optimal upload speed, we recommend compressing your video before submission."
+      q: "What roles are you currently casting for?",
+      a: "We are casting for: 1) Heroine roles (Ages 18-25), 2) College students (Ages 18-25), 3) Office staff & professionals (Ages 25-45), and 4) Father & Mother roles (Ages 35-60)."
     },
     {
-      q: "Is there an entry or registration fee to apply?",
-      a: "No, submitting your audition application is 100% free of charge. We will review all digital submissions equally."
+      q: "Who is the creative team behind Mini & Cooper?",
+      a: "Mini & Cooper is an upcoming feature film presented by producer Rold Thomas and directed by Jomy Kuriakose, with cinematography (DOP) by Shiju M. Bhasker and casting directed by Sharan S S."
     },
     {
-      q: "How long after submission will I hear back?",
-      a: "Our casting directors will review applications on a rolling basis. Successful applicants will be contacted via Email or WhatsApp by September 5, 2026."
+      q: "How large can my video file be for online submission?",
+      a: "Our portal supports direct browser uploads up to 500MB in size. We support MP4, MOV, and AVI formats."
     },
     {
-      q: "Can I submit my details if I'm under 18?",
-      a: "This current round of casting is strictly for actors aged 18 and older. Keep an eye out for our upcoming youth casting calls!"
+      q: "How can I contact AWA Movies directly?",
+      a: "You can reach us at awamovies.uk@gmail.com or contact the casting hotline via Phone/WhatsApp at +44 7597 311388."
     }
   ];
 
@@ -91,7 +91,7 @@ export default function LandingPage() {
             className="object-cover object-center"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-black/50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-black/55" />
         </div>
 
         {/* Hero Content */}
@@ -103,7 +103,7 @@ export default function LandingPage() {
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-6 backdrop-blur-sm"
           >
             <Award className="w-3.5 h-3.5" />
-            <span>Official Casting Portal</span>
+            <span>AWA MOVIES Presents</span>
           </motion.div>
 
           <motion.h1
@@ -112,7 +112,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.15 }}
             className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight"
           >
-            Shine on the <span className="text-primary bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Big Stage</span>
+            Walk-In Audition: <span className="text-primary bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Mini & Cooper</span>
           </motion.h1>
 
           <motion.p
@@ -121,7 +121,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
             className="mt-6 text-lg sm:text-xl text-slate-200 max-w-2xl mx-auto leading-relaxed"
           >
-            Submit your portfolio, acting resume, and video monologue directly to our casting board for the upcoming feature film production of <strong>"The Final Act"</strong>.
+            Submit your portfolio, acting resume, and video monologue directly to our casting board for the upcoming feature film starring <strong>Dhyan Sreenivasan</strong>. Directed by <strong>Jomy Kuriakose</strong>.
           </motion.p>
 
           <motion.div
@@ -134,14 +134,14 @@ export default function LandingPage() {
               href="/apply" 
               className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold bg-primary text-primary-foreground hover:opacity-90 shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2 group cursor-pointer"
             >
-              <span>Apply for Audition</span>
+              <span>Register for Audition</span>
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </Link>
             <a 
               href="#details" 
               className="w-full sm:w-auto px-8 py-4 rounded-xl font-semibold border border-white/20 bg-white/5 text-white hover:bg-white/10 transition-colors backdrop-blur-sm flex items-center justify-center"
             >
-              Learn Requirements
+              Requirements & Info
             </a>
           </motion.div>
         </div>
@@ -156,10 +156,10 @@ export default function LandingPage() {
             <div className="lg:col-span-2 space-y-8">
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-foreground">
-                  Audition Details
+                  Production Information
                 </h2>
                 <p className="mt-2 text-muted-foreground">
-                  Get all the production parameters for "The Final Act" below. Ensure your schedule aligns with our filming timeline.
+                  Verify the cast and crew parameters below. Ensure your schedule accommodates the principal photography start date in the UK.
                 </p>
               </div>
 
@@ -195,18 +195,18 @@ export default function LandingPage() {
             >
               <div className="absolute top-[-20%] right-[-10%] w-48 h-48 bg-primary/20 rounded-full blur-3xl" />
               <div>
-                <span className="px-3 py-1 rounded-full bg-red-500/25 border border-red-500/30 text-red-300 text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 mb-4">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                  Submission Deadline
+                <span className="px-3 py-1 rounded-full bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider inline-flex items-center gap-1.5 mb-4">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                  Audition Event
                 </span>
-                <h3 className="text-2xl font-bold">August 25, 2026</h3>
+                <h3 className="text-2xl font-bold">July 5, 2026</h3>
                 <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-                  Applications must be submitted by 11:59 PM EST. Late entries or incomplete forms will not be forwarded to the casting director.
+                  Walk-in auditions will occur at Kerala Hut, Luton from 10:00 AM to 5:00 PM. Please register online beforehand to streamline the check-in process.
                 </p>
               </div>
               <div className="mt-6 border-t border-white/10 pt-4 flex items-center gap-2.5 text-xs text-slate-400">
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Verified secure Google Drive upload portal</span>
+                <span>Verified AWA Movies Casting Portal</span>
               </div>
             </motion.div>
 
