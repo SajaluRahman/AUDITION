@@ -10,10 +10,10 @@ export default function Footer() {
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2 font-bold text-lg text-primary tracking-wide">
               <Film className="w-5 h-5 text-primary" />
-              <span>Audition Portal</span>
+              <span>AWA MOVIES</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-              Empowering actors, performers, and creative talents to take the center stage. Submit your materials and launch your career today.
+              Casting and production portal for upcoming Malayalam and UK-based feature film productions.
             </p>
           </div>
 
@@ -34,15 +34,15 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary shrink-0" />
-                <span>Broadway Avenue, Suite 101, NY</span>
+                <span>Kerala Hut, 1 George St., Luton LU1 2AA, UK</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-primary shrink-0" />
-                <span>casting@auditionportal.com</span>
+                <span>awamovies.uk@gmail.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-primary shrink-0" />
-                <span>+1 (555) 019-2834</span>
+                <span>+44 7597 311388</span>
               </li>
             </ul>
           </div>

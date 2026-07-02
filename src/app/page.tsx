@@ -15,7 +15,9 @@ import {
   Camera, 
   Award, 
   ArrowRight,
-  ShieldCheck
+  ShieldCheck,
+  Film,
+  Users
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -27,9 +29,11 @@ export default function LandingPage() {
 
   const auditionDetails = [
     { icon: Calendar, label: "Audition Date", val: "July 5, 2026" },
-    { icon: MapPin, label: "Venue Location", val: "Luton, United Kingdom" },
+    { icon: MapPin, label: "Venue Location", val: "Kerala Hut, Luton, UK" },
     { icon: Clock, label: "Audition Time", val: "10:00 AM - 5:00 PM BST" },
     { icon: Award, label: "Shoot Timeline", val: "September 2026 (UK)" },
+    { icon: Film, label: "DOP / Cinematographer", val: "Shiju M. Bhasker" },
+    { icon: Users, label: "Casting Director", val: "Sharan S S" },
   ];
 
   const requirements = [

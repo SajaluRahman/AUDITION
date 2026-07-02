@@ -25,7 +25,7 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2 font-bold text-xl text-primary tracking-wide text-glow">
               <Film className="w-6 h-6 text-primary" />
-              <span>Audition Portal</span>
+              <span>AWA MOVIES</span>
             </Link>
           </div>
 
