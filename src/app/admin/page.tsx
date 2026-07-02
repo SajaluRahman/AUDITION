@@ -68,13 +68,18 @@ export default function AdminDashboard() {
     toast({ type: 'info', title: 'Logged Out', description: 'You have been safely logged out.' });
   };
 
-  // Fetch applicant list from spreadsheet API
+  // Fetch applicant list directly from Google Sheets via Apps Script Web App
   const fetchApplicants = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
 
     try {
-      const response = await fetch('/api/status');
+      const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
+      if (!appsScriptUrl) {
+        throw new Error('Google Apps Script URL is not configured.');
+      }
+
+      const response = await fetch(`${appsScriptUrl}?action=readSheet`);
       if (!response.ok) {
         throw new Error('Failed to fetch data from casting server');
       }
@@ -86,7 +91,7 @@ export default function AdminDashboard() {
       }
     } catch (error: any) {
       console.error(error);
-      toast({ type: 'error', title: 'Data loading failed', description: error.message || 'Ensure your Service Account is configured.' });
+      toast({ type: 'error', title: 'Data loading failed', description: error.message || 'Ensure your Apps Script Web App is running.' });
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -99,13 +104,21 @@ export default function AdminDashboard() {
     }
   }, [isLoggedIn]);
 
-  // Update status (Shortlist / Reject)
+  // Update status (Shortlist / Reject) directly on Google Sheets via Apps Script Web App
   const handleUpdateStatus = async (submissionId: string, newStatus: 'Shortlisted' | 'Rejected' | 'Pending') => {
     try {
-      const response = await fetch('/api/status', {
+      const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
+      if (!appsScriptUrl) {
+        throw new Error('Google Apps Script URL is not configured.');
+      }
+
+      const response = await fetch(appsScriptUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ submissionId, status: newStatus }),
+        body: JSON.stringify({
+          action: 'updateStatus',
+          submissionId,
+          status: newStatus
+        }),
       });
 
       const res = await response.json();

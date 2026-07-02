@@ -92,46 +92,70 @@ export default function ApplyPage() {
   const resumeUrl = watch('resumeUrl');
   const videoUrl = watch('videoUrl');
 
-  // Handle standard small file uploads (Photos, Resume) via /api/upload
+  // Handle standard small file uploads (Photos, Resume) directly to Apps Script via base64 POST
   const handleSmallFileUpload = async (file: File, key: string, folderName: string) => {
     try {
       setUploads((prev) => ({ ...prev, [key]: { progress: 10, status: 'uploading', name: file.name } }));
 
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folderName', folderName);
+      // Read file content as base64 on client side
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string;
+          const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
 
-      // We use XMLHttpRequest so we can capture upload progress event
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/upload', true);
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          setUploads((prev) => ({ ...prev, [key]: { ...prev[key], progress: Math.min(percent, 95) } }));
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const res = JSON.parse(xhr.responseText);
-          if (res.success) {
-            setUploads((prev) => ({ ...prev, [key]: { progress: 100, status: 'success', url: res.url, name: file.name } }));
-            setValue(key + 'Url' as any, res.url, { shouldValidate: true });
-            toast({ type: 'success', title: 'File uploaded successfully', description: file.name });
-          } else {
-            throw new Error(res.error || 'Server rejected file');
+          if (!appsScriptUrl) {
+            throw new Error('Google Apps Script URL is not configured.');
           }
-        } else {
-          throw new Error('Upload failed with status ' + xhr.status);
+
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', appsScriptUrl, true);
+
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const percent = Math.round((event.loaded / event.total) * 100);
+              setUploads((prev) => ({ ...prev, [key]: { ...prev[key], progress: Math.min(percent, 95) } }));
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 201) {
+              const res = JSON.parse(xhr.responseText);
+              if (res.success) {
+                setUploads((prev) => ({ ...prev, [key]: { progress: 100, status: 'success', url: res.data.url, name: file.name } }));
+                setValue(key + 'Url' as any, res.data.url, { shouldValidate: true });
+                toast({ type: 'success', title: 'File uploaded successfully', description: file.name });
+              } else {
+                throw new Error(res.error || 'Server rejected file');
+              }
+            } else {
+              throw new Error('Upload failed with status ' + xhr.status);
+            }
+          };
+
+          xhr.onerror = () => {
+            throw new Error('Network error during upload');
+          };
+
+          xhr.send(JSON.stringify({
+            action: 'uploadFile',
+            fileData: base64Data,
+            fileName: file.name,
+            folderName: folderName
+          }));
+
+        } catch (err: any) {
+          console.error(err);
+          setUploads((prev) => ({ ...prev, [key]: { progress: 0, status: 'error', name: file.name } }));
+          toast({ type: 'error', title: 'Upload failed', description: err.message || 'Please try again.' });
         }
       };
 
-      xhr.onerror = () => {
-        throw new Error('Network error during upload');
+      reader.onerror = () => {
+        throw new Error('FileReader failed to process file.');
       };
 
-      xhr.send(formData);
+      reader.readAsDataURL(file);
 
     } catch (err: any) {
       console.error(err);
@@ -140,7 +164,7 @@ export default function ApplyPage() {
     }
   };
 
-  // Handle multiple portfolio photo uploads (limit to max 5)
+  // Handle multiple portfolio photo uploads (limit to max 5) directly to Apps Script via base64 POST
   const handlePortfolioUpload = async (file: File) => {
     if (portfolioList.length >= 5) {
       toast({ type: 'warning', title: 'Portfolio limit reached', description: 'You can upload a maximum of 5 portfolio photos.' });
@@ -154,47 +178,72 @@ export default function ApplyPage() {
     setPortfolioList((prev) => [...prev, newUpload]);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folderName', 'Portfolio');
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64Data = reader.result as string;
+          const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
 
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/api/upload', true);
-
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percent = Math.round((event.loaded / event.total) * 100);
-          setPortfolioList((prev) =>
-            prev.map((item) => (item.id === fileId ? { ...item, progress: Math.min(percent, 95) } : item))
-          );
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const res = JSON.parse(xhr.responseText);
-          if (res.success) {
-            setPortfolioList((prev) => {
-              const updated = prev.map((item) => (item.id === fileId ? { ...item, progress: 100, status: 'success' as const, url: res.url } : item));
-              // Update form state with new list of comma-separated URLs
-              const urls = updated.filter((item) => item.status === 'success' && item.url).map((item) => item.url).join(',');
-              setValue('portfolioUrls', urls, { shouldValidate: true });
-              return updated;
-            });
-            toast({ type: 'success', title: 'Portfolio image uploaded', description: file.name });
-          } else {
-            throw new Error(res.error || 'Server rejected file');
+          if (!appsScriptUrl) {
+            throw new Error('Google Apps Script URL is not configured.');
           }
-        } else {
-          throw new Error('Upload failed');
+
+          const xhr = new XMLHttpRequest();
+          xhr.open('POST', appsScriptUrl, true);
+
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const percent = Math.round((event.loaded / event.total) * 100);
+              setPortfolioList((prev) =>
+                prev.map((item) => (item.id === fileId ? { ...item, progress: Math.min(percent, 95) } : item))
+              );
+            }
+          };
+
+          xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 201) {
+              const res = JSON.parse(xhr.responseText);
+              if (res.success) {
+                setPortfolioList((prev) => {
+                  const updated = prev.map((item) => (item.id === fileId ? { ...item, progress: 100, status: 'success' as const, url: res.data.url } : item));
+                  // Update form state with new list of comma-separated URLs
+                  const urls = updated.filter((item) => item.status === 'success' && item.url).map((item) => item.url).join(',');
+                  setValue('portfolioUrls', urls, { shouldValidate: true });
+                  return updated;
+                });
+                toast({ type: 'success', title: 'Portfolio image uploaded', description: file.name });
+              } else {
+                throw new Error(res.error || 'Server rejected file');
+              }
+            } else {
+              throw new Error('Upload failed');
+            }
+          };
+
+          xhr.onerror = () => {
+            throw new Error('Network error during upload');
+          };
+
+          xhr.send(JSON.stringify({
+            action: 'uploadFile',
+            fileData: base64Data,
+            fileName: file.name,
+            folderName: 'Portfolio'
+          }));
+
+        } catch (err: any) {
+          setPortfolioList((prev) =>
+            prev.map((item) => (item.id === fileId ? { ...item, progress: 0, status: 'error' as const } : item))
+          );
+          toast({ type: 'error', title: 'Portfolio upload failed', description: err.message || 'Error uploading file' });
         }
       };
 
-      xhr.onerror = () => {
-        throw new Error('Network error');
+      reader.onerror = () => {
+        throw new Error('FileReader failed to process file.');
       };
 
-      xhr.send(formData);
+      reader.readAsDataURL(file);
 
     } catch (err: any) {
       setPortfolioList((prev) =>
@@ -213,33 +262,41 @@ export default function ApplyPage() {
     });
   };
 
-  // Handle large video file upload up to 500MB via Drive Resumable Upload
+  // Handle large video file upload up to 500MB via Drive Resumable Upload directly from browser to Google Drive
   const handleVideoUpload = async (file: File) => {
     try {
       setUploads((prev) => ({ ...prev, video: { progress: 5, status: 'uploading', name: file.name } }));
 
-      // Step 1: Initiate session with Server API to retrieve Resumable Upload URL
-      const sessionResponse = await fetch('/api/upload', {
+      // Step 1: Initiate session directly with Google Apps Script Web App
+      const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
+      if (!appsScriptUrl) {
+        throw new Error('Google Apps Script URL is not configured.');
+      }
+
+      const sessionResponse = await fetch(appsScriptUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'resumable',
+          action: 'getResumableUrl',
           fileName: file.name,
           mimeType: file.type,
           folderName: 'Videos',
+          origin: window.location.origin,
         }),
       });
 
       if (!sessionResponse.ok) {
-        const errJson = await sessionResponse.json();
-        throw new Error(errJson.error || 'Failed to initiate resumable upload session');
+        const errText = await sessionResponse.text();
+        throw new Error(errText || 'Failed to initiate resumable upload session');
       }
 
-      const sessionData = await sessionResponse.json();
-      const { uploadUrl } = sessionData;
+      const res = await sessionResponse.json();
+      if (!res.success) {
+        throw new Error(res.error || 'Failed to initiate resumable upload session');
+      }
+      const { uploadUrl } = res.data;
 
       if (!uploadUrl) {
-        throw new Error('Upload session URL not returned by server.');
+        throw new Error('Upload session URL not returned by Google.');
       }
 
       // Step 2: Perform direct chunked binary PUT upload from browser to Google Drive
@@ -355,20 +412,31 @@ export default function ApplyPage() {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  // Submit final payload to API
+  // Submit final payload directly to Google Apps Script Web App
   const onSubmit = async (data: AuditionInput) => {
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/submit', {
+      const appsScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_URL;
+      if (!appsScriptUrl) {
+        throw new Error('Google Apps Script URL is not configured.');
+      }
+
+      const response = await fetch(appsScriptUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          action: 'saveSubmission',
+          submission: data,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit application');
+      }
 
       const res = await response.json();
       if (res.success) {
         toast({ type: 'success', title: 'Application Submitted', description: 'Your application has been received!' });
-        router.push(`/success?id=${res.submissionId}&ref=${res.referenceNumber}`);
+        router.push(`/success?id=${res.data.submissionId}&ref=${res.data.referenceNumber}`);
       } else {
         throw new Error(res.error || 'Server error saving submission');
       }
